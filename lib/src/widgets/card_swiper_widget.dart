@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:peliculas/src/models/pelicula_model.dart';
 
 class CardSwiper extends StatelessWidget {
 
-  final List<dynamic> peliculas; //se la define final porque no va a cambiar
+  final List<Pelicula> peliculas; //se la define final porque no va a cambiar
 
   //Este widget necesita recibir la lista de tarjetas que se necesita mostrar y como es final la lista
   //se necesita inicializar en el cosntructor y lo coloco como requerido
@@ -26,7 +27,11 @@ class CardSwiper extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return ClipRRect( //Este widget redondea las puntas de los rectángulos
             borderRadius: BorderRadius.circular(20.0),
-            child: Image.network('http://via.placeholder.com/350x150',fit: BoxFit.cover,)
+            child: FadeInImage(
+              image: NetworkImage(peliculas[index].getPosterImg()),
+              placeholder: AssetImage('assets/img/no-image.jpg'),
+              fit: BoxFit.cover, //Para que cubra todo el espacio posible en su contenedor
+            )
             );
         },
         itemCount: peliculas.length,

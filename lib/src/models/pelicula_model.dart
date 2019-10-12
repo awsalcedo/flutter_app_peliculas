@@ -96,4 +96,13 @@ class Pelicula {
     overview         = json['overview'];
     releaseDate      = json['release_date'];
   }
+
+  getPosterImg() {
+    if(posterPath == null) {
+      return 'http://www.tellerreport.com/images/no-image.jpg';
+    }else {
+      return 'https://image.tmdb.org/t/p/w500/$posterPath';
+    }
+  }
+
 }
