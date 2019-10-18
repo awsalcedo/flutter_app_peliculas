@@ -11,14 +11,22 @@ class PeliculasProvider {
   String _url      = 'api.themoviedb.org';
   String _language = 'es-ES';
   int _popularesPage = 0;
+  bool _cargando = false;
 
   //Contenedor de películas
   List<Pelicula> _populares = new List();
 
-  final _popularesStream = StreamController<List<Pelicula>>.broadcast();
+  //Hay que indicarle que información va a fluir por el río de información, se pone broadcast para que muchos lugares puedan escuchar la información
+  final _popularesStreamController = StreamController<List<Pelicula>>.broadcast();
+
+  //Para agregar al StreamController
+  Function(List<Pelicula>) get popularesSink => _popularesStreamController.sink.add;
+
+  //Para leer la información del StreamController
+  Stream<List<Pelicula>> get popularesStream => _popularesStreamController.stream;
 
   void disposeStream(){
-    _popularesStream?.close();
+    _popularesStreamController?.close();
   }
 
   Future<List<Pelicula>> getEnCines() async {
@@ -48,11 +56,18 @@ class PeliculasProvider {
 
     //Optimización de código repetido
 
-    return await _procesarRespuesta(url);
+    final resp = await _procesarRespuesta(url);
+
+    return resp;
 
   }
 
   Future<List<Pelicula>> getPopulares() async {
+
+    //Si estoy cargando datos devuelva un arreglo vacío, es decir para controlar que no se lancen peticiones cada vez que se llega al final de la página de las imagenes
+    if (_cargando) return [];
+
+    _cargando = true;
 
     _popularesPage++;
 
@@ -64,7 +79,15 @@ class PeliculasProvider {
 
     //https://api.themoviedb.org/3/movie/popular?api_key=76d76f2aeddf79d9f28cbfa7b2a7a3c7&language=en-US&page=1
 
-    return await _procesarRespuesta(url);
+    final resp = await _procesarRespuesta(url);
+    
+    _populares.addAll(resp);
+
+    popularesSink(_populares);
+
+    _cargando = false;
+    
+    return resp;
   }
 
   Future<List<Pelicula>> _procesarRespuesta(Uri url) async {
