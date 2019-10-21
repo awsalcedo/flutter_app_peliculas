@@ -105,4 +105,12 @@ class Pelicula {
     }
   }
 
+  getBackgroundImg() {
+    if(posterPath == null) {
+      return 'http://www.tellerreport.com/images/no-image.jpg';
+    }else {
+      return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+    }
+  }
+
 }
